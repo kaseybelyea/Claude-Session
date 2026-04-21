@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Exit Interview Analysis — Meridian Technologies</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f4f5f7;
+      color: #1a1a2e;
+      padding: 32px 24px;
+    }
+
+    header {
+      max-width: 1100px;
+      margin: 0 auto 32px;
+    }
+
+    header h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #1a1a2e;
+    }
+
+    header p {
+      margin-top: 6px;
+      font-size: 0.95rem;
+      color: #6b7280;
+    }
+
+    .grid {
+      display: grid;
+      max-width: 1100px;
+      margin: 0 auto;
+      gap: 24px;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+
+    .card.full { grid-column: 1 / -1; }
+
+    .card h2 {
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #6b7280;
+      margin-bottom: 20px;
+    }
+
+    .chart-wrap {
+      position: relative;
+      height: 280px;
+    }
+
+    .chart-wrap.tall { height: 320px; }
+
+    /* Stat cards row */
+    .stats {
+      display: grid;
+      grid-column: 1 / -1;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .stat {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px 24px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+
+    .stat .value {
+      font-size: 2.4rem;
+      font-weight: 700;
+      line-height: 1;
+      color: #1a1a2e;
+    }
+
+    .stat .label {
+      margin-top: 6px;
+      font-size: 0.82rem;
+      color: #6b7280;
+    }
+
+    .stat .sub {
+      margin-top: 4px;
+      font-size: 0.78rem;
+      color: #9ca3af;
+    }
+
+    /* Strategic priorities */
+    .priorities {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .priority {
+      border-radius: 12px;
+      padding: 22px 24px;
+      color: #fff;
+    }
+
+    .priority.green  { background: linear-gradient(135deg, #059669, #10b981); }
+    .priority.red    { background: linear-gradient(135deg, #dc2626, #ef4444); }
+    .priority.amber  { background: linear-gradient(135deg, #d97706, #f59e0b); }
+
+    .priority .tag {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.85;
+      margin-bottom: 8px;
+    }
+
+    .priority h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .priority p {
+      font-size: 0.82rem;
+      line-height: 1.55;
+      opacity: 0.92;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Exit Interview Analysis</h1>
+  <p>Meridian Technologies &nbsp;·&nbsp; 60 interviews &nbsp;·&nbsp; Aug 2024 – Jul 2025</p>
+</header>
+
+<div class="grid">
+
+  <!-- Stat strip -->
+  <div class="stats">
+    <div class="stat">
+      <div class="value">60</div>
+      <div class="label">Total interviews</div>
+      <div class="sub">9 functions</div>
+    </div>
+    <div class="stat">
+      <div class="value">57%</div>
+      <div class="label">2–5 year tenure</div>
+      <div class="sub">Largest exit cohort</div>
+    </div>
+    <div class="stat">
+      <div class="value">37%</div>
+      <div class="label">Cite comp issues</div>
+      <div class="sub">Top theme by volume</div>
+    </div>
+    <div class="stat">
+      <div class="value">30%</div>
+      <div class="label">Manager-driven exits</div>
+      <div class="sub">Highest-leverage fix</div>
+    </div>
+  </div>
+
+  <!-- Theme frequency -->
+  <div class="card full">
+    <h2>Top 5 themes across all interviews</h2>
+    <div class="chart-wrap">
+      <canvas id="themesChart"></canvas>
+    </div>
+  </div>
+
+  <!-- By function -->
+  <div class="card">
+    <h2>Departures by function</h2>
+    <div class="chart-wrap tall">
+      <canvas id="functionChart"></canvas>
+    </div>
+  </div>
+
+  <!-- By tenure -->
+  <div class="card">
+    <h2>Departures by tenure</h2>
+    <div class="chart-wrap tall">
+      <canvas id="tenureChart"></canvas>
+    </div>
+  </div>
+
+  <!-- Strategic priorities -->
+  <div class="priorities">
+    <div class="priority green">
+      <div class="tag">Double down</div>
+      <h3>Good managers</h3>
+      <p>Manager quality is the single highest-leverage variable within Meridian's control — cited in 30% of exits. Scaling what the best managers do pays dividends across every function.</p>
+    </div>
+    <div class="priority red">
+      <div class="tag">Fix now</div>
+      <h3>Compensation structure</h3>
+      <p>Gender pay gaps ($8–15K at the same level), below-market EMEA &amp; Bangalore rates, and equity refreshes at 30–40% of new-hire grants are all auditable and fixable.</p>
+    </div>
+    <div class="priority amber">
+      <div class="tag">Watch closely</div>
+      <h3>Infrastructure team</h3>
+      <p>On-call pages tripled year-over-year. Senior engineers leaving worsen the rotation for those who remain — a feedback loop that becomes a reliability crisis if not interrupted now.</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const GREY   = '#6b7280';
+  const LIGHT  = '#e5e7eb';
+
+  Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+  Chart.defaults.color = GREY;
+
+  // ── Themes (horizontal bar) ──────────────────────────────────────────────
+  new Chart(document.getElementById('themesChart'), {
+    type: 'bar',
+    data: {
+      labels: [
+        'Compensation & Pay Equity',
+        'Career Progression Blocked',
+        'Org Structure & Internal Mobility',
+        'Manager Quality',
+        'Workload & Burnout',
+      ],
+      datasets: [{
+        data: [37, 32, 28, 30, 22],
+        backgroundColor: ['#ef4444', '#f97316', '#eab308', '#3b82f6', '#8b5cf6'],
+        borderRadius: 6,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: { label: ctx => ` ${ctx.raw}% of interviews` }
+        }
+      },
+      scales: {
+        x: {
+          max: 50,
+          grid: { color: LIGHT },
+          ticks: { callback: v => v + '%' }
+        },
+        y: {
+          grid: { display: false },
+          ticks: { font: { size: 13 } }
+        }
+      }
+    }
+  });
+
+  // ── By function (vertical bar) ───────────────────────────────────────────
+  new Chart(document.getElementById('functionChart'), {
+    type: 'bar',
+    data: {
+      labels: ['Engineering','Sales','Customer\nSuccess','Product','Data','Operations','Design','Finance','People'],
+      datasets: [{
+        data: [19, 9, 7, 7, 6, 6, 4, 2, 1],
+        backgroundColor: '#3b82f6',
+        borderRadius: 6,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { size: 11 } } },
+        y: { grid: { color: LIGHT }, ticks: { stepSize: 5 } }
+      }
+    }
+  });
+
+  // ── By tenure (doughnut) ─────────────────────────────────────────────────
+  new Chart(document.getElementById('tenureChart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Under 1 year', '1–2 years', '2–5 years', '5+ years'],
+      datasets: [{
+        data: [3, 14, 34, 9],
+        backgroundColor: ['#bfdbfe', '#60a5fa', '#2563eb', '#1e3a8a'],
+        borderWidth: 0,
+        hoverOffset: 6,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '62%',
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { padding: 16, usePointStyle: true, pointStyleWidth: 10 }
+        },
+        tooltip: {
+          callbacks: {
+            label: ctx => {
+              const pct = Math.round(ctx.raw / 60 * 100);
+              return ` ${ctx.raw} employees (${pct}%)`;
+            }
+          }
+        }
+      }
+    }
+  });
+</script>
+</body>
+</html>
